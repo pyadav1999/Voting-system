@@ -1,0 +1,140 @@
+﻿@model Voting_system.Models.Voting
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.vote-result').hide();
+
+        $(document).on("click", ".voteA", function () {
+            debugger;
+            var voteA = $(this).val();
+            voteA++;
+            $(this).val(voteA);
+            VoteCss();
+        });
+
+        $(document).on("click", ".voteB", function () {
+            debugger;
+            var voteB = $(this).val();
+            voteB++;
+            $(this).val(voteB);
+            VoteCss();
+        });
+
+        function VoteCss() {
+            debugger;
+            $('.vote-result').show();
+            $('#noA').empty();
+            $('#noB').empty();
+            $('#noT').empty();
+            var A = parseInt($('.voteA').val());
+            var B = parseInt($('.voteB').val());
+            var T = A + B;
+            var percA = (A / T) * 100;
+            var percB = (B / T) * 100;
+            // $('#voteA').append(percA + "%");
+            //$('#voteB').prepend(percB + "%");
+            if (percA > 50) {
+                $('#voteA').css({ "background-color": "Green" });
+                $('#voteB').width("100%");
+                $('#voteB').css({ "background-color": "Red" });
+                $('#voteA').width(percA + "%");
+            }
+            else if (percA == percB) {
+                $('#voteA').css({ "background-color": "Yellow" });
+                $('#voteB').width("100%");
+                $('#voteB').css({ "background-color": "Yellow" });
+                $('#voteA').width(percA + "%");
+            }
+            else {
+                $('#voteA').css({ "background-color": "Red" });
+                $('#voteB').width("100%");
+                $('#voteB').css({ "background-color": "Green" });
+                $('#voteA').width(percA + "%");
+            }
+            $('#noA').append(A);
+            $('#noB').append(B);
+            $('#noT').append(T);
+        }
+        $(document).on("click", ".vote-btn", function () {
+            debugger;
+            var model = new Object();
+            model.voteA = parseInt($('.voteA').val());
+            model.voteB = parseInt($('.voteB').val());
+                    $.ajax({
+                        url: "@Url.Action("Vote", "Voting")",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        processData: false,
+                        data: JSON.stringify({ model }),
+                        success: function (result) {
+                            debugger;
+                            if (result.Status == true) {
+                                $('.vote-area').hide();
+                                $('.vote-result').show();
+                                if (result.Tempmodel.VoteA > result.Tempmodel.VoteB) {
+                                    
+                                    swal("A is Won");
+                                }
+                                else if (result.Tempmodel.VoteA == result.Tempmodel.VoteB) {
+                                  
+                                    swal('Voting is Tie');
+                                }
+                                else {
+                                    
+                                    swal('B is Won');}
+                            }
+                            else {
+                                alert(result.Message);
+                            }
+                        }
+                    });
+        });
+    });
+
+
+</script>
+<div class="container">
+    <div class="block">
+        <div class="block-content">
+            <div class="vote-result">
+                @{Html.RenderPartial("_Count"); }
+            </div>
+            <div class="vote-area">
+                <div class="row form-group">
+                    <div class="col-md-12" style="height:35px;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-primary voteA" value="0">VoteA </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12" style="height:35px;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-primary voteB" value="0"> VoteB</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-4" style="text-align:center;">
+                        <input type="button" value="Vote" class="btn btn-default vote-btn" style="font-size:13px" />
+                    </div>
+                </div>
+            </div>
+          
+
+        </div>
+
+    </div>
+</div>
+

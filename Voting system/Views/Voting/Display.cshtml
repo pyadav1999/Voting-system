@@ -1,0 +1,23 @@
+﻿@model IEnumerable<Voting_system.Models.Voting>
+@{
+    ViewBag.Title = "Display";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Image Display</h2>
+<div class="container">
+    <div class="block">
+        @foreach (var items in Model)
+        {
+            string x = Convert.ToString(items.img);
+            if (x != "0x00")
+            {
+                string img = Convert.ToBase64String(items.img, 0, items.img.Length);
+                string image = "data:image/jgp;base64," + img;
+                <div class="image">
+                    <img src="@image" />
+                </div>
+            }
+        }
+    </div>
+</div>
